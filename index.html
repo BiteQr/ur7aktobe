@@ -5,75 +5,74 @@
 <title>Оставьте отзыв</title>
 <style>
 body { font-family: Arial; background: linear-gradient(135deg, #74ebd5, #ACB6E5); display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
-.container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); text-align:center; width:90%; max-width:350px; position:absolute; opacity:0; transform:scale(0.95); transition: all 0.4s ease; pointer-events:none; }
+.container { background: rgba(255,255,255,0.95); padding:30px; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,0.2); text-align:center; width:90%; max-width:350px; position:absolute; opacity:0; transform:scale(0.95); transition:all 0.4s ease; pointer-events:none; }
 .container.active { opacity:1; transform:scale(1); pointer-events:all; }
 select, button { padding:12px 20px; margin:15px 0; font-size:16px; width:100%; border-radius:8px; border:1px solid #ccc; transition:all 0.2s ease; }
 button { cursor:pointer; background:#6a11cb; color:#fff; border:none; }
-button:hover { background:#2575fc; transform: scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-.star { font-size:30px; cursor:pointer; color:#ccc; margin:0 5px; transition:all 0.2s ease; display:inline-block;}
-.star:hover, .star.hovered { color: gold; transform: translateY(-5px) scale(1.2);}
+button:hover { background:#2575fc; transform:scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.star { font-size:30px; cursor:pointer; color:#ccc; margin:0 5px; display:inline-block; transition:all 0.2s ease;}
+.star.hovered, .star:hover { color:gold; transform:translateY(-5px) scale(1.2);}
 img#empPreview { margin-top:10px; width:60px; height:60px; border-radius:50%;}
 .spinner { border:4px solid #f3f3f3; border-top:4px solid #6a11cb; border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite; display:none; margin-left:10px;}
 @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.checkmark { color:green; font-size:24px; margin-left:10px; display:inline-block; opacity:0; transition: opacity 0.5s;}
+.checkmark { color:green; font-size:24px; margin-left:10px; display:inline-block; opacity:0; transition:opacity 0.5s;}
 </style>
 </head>
 <body>
 
 <div class="container active" id="step1">
-  <h1>Выберите сотрудника</h1>
-  <select id="employee"><option value="">-- Выберите --</option></select>
-  <img id="empPreview" src="" alt="">
-  <button id="next1">Далее</button>
+<h1>Выберите сотрудника</h1>
+<select id="employee"><option value="">-- Выберите --</option></select>
+<img id="empPreview" src="" alt="">
+<button id="next1">Далее</button>
 </div>
 
 <div class="container" id="step2">
-  <h1>Оцените сотрудника</h1>
-  <div id="stars">
-    <span class="star" data-value="1">★</span>
-    <span class="star" data-value="2">★</span>
-    <span class="star" data-value="3">★</span>
-    <span class="star" data-value="4">★</span>
-    <span class="star" data-value="5">★</span>
-  </div>
-  <button id="next2">Далее</button>
+<h1>Оцените сотрудника</h1>
+<div id="stars">
+<span class="star" data-value="1">★</span>
+<span class="star" data-value="2">★</span>
+<span class="star" data-value="3">★</span>
+<span class="star" data-value="4">★</span>
+<span class="star" data-value="5">★</span>
+</div>
+<button id="next2">Далее</button>
 </div>
 
 <div class="container" id="step3">
-  <h1>Откуда вы узнали о нас?</h1>
-  <select id="source">
-    <option value="">-- Выберите --</option>
-    <option value="Instagram">Instagram</option>
-    <option value="Facebook">Facebook</option>
-    <option value="Друзья">Друзья</option>
-    <option value="Другое">Другое</option>
-  </select>
-  <button id="send">Отправить отзыв</button>
-  <span class="spinner" id="spinner"></span>
-  <span class="checkmark" id="checkmark">✓</span>
+<h1>Откуда вы узнали о нас?</h1>
+<select id="source">
+<option value="">-- Выберите --</option>
+<option value="Instagram">Instagram</option>
+<option value="Facebook">Facebook</option>
+<option value="Друзья">Друзья</option>
+<option value="Другое">Другое</option>
+</select>
+<button id="send">Отправить отзыв</button>
+<span class="spinner" id="spinner"></span>
+<span class="checkmark" id="checkmark">✓</span>
 </div>
 
 <script>
-const webAppUrl = "https://script.google.com/macros/s/AKfycbzBY8vaC6dpKO17uD-6vmGf2QXRst-_LXkbzZElkBPGZacdz2eAEWlIdK5zcqYh2C08Eg/exec"; // заменить на URL вашего Apps Script
+const webAppUrl = "https://script.google.com/macros/s/AKfycbwo_yxa4G98yBRT5yEZ5zaHpU0E-7ZjQxrCx97CkqKfN8gVPAXRnJ86bhsN5qGTDyvH/exec"; // Заменить на свой
 
 let rating = 0;
 const select = document.getElementById('employee');
 
-// Подгрузка сотрудников
 fetch(webAppUrl)
-  .then(res => res.json())
-  .then(employees => {
-    employees.forEach(emp => {
-      const option = document.createElement('option');
-      option.value = emp.employee_name;
-      option.textContent = emp.employee_name;
-      option.dataset.id = emp.employee_id;
-      option.dataset.img = emp.img_url;
-      select.appendChild(option);
-    });
+.then(res=>res.json())
+.then(employees=>{
+  employees.forEach(emp=>{
+    const option = document.createElement('option');
+    option.value = emp.employee_name;
+    option.textContent = emp.employee_name;
+    option.dataset.id = emp.employee_id;
+    option.dataset.img = emp.img_url;
+    select.appendChild(option);
   });
+});
 
-select.addEventListener('change', () => {
+select.addEventListener('change', ()=>{
   const selected = select.selectedOptions[0];
   document.getElementById('empPreview').src = selected.dataset.img || "";
 });
